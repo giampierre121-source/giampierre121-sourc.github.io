@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feliz Cumpleaños</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Fondo de fuegos artificiales */
+    #fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 1200px;
+      position: relative;
+      z-index: 1; /* para que quede sobre los fuegos */
+    }
+
+    /* GIF */
+    .gif-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .gif-container img {
+      width: 100%;
+      max-width: 500px; /* ajusta el tamaño del gif */
+      height: auto;
+      display: block;
+      border-radius: 102px;
+    }
+
+    /* Texto */
+    .content {
+      flex: 1;
+      padding: 30px;
+      text-align: left;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #ff69b4;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 8px #000;
+    }
+
+    p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      color: #eee;
+    }
+
+    /* Botón */
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: linear-gradient(45deg, #ff69b4, #ff1493);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(45deg, #ff1493, #ff69b4);
+    }
+  </style>
+</head>
+<body>
+  <!-- Fondo de fuegos -->
+  <canvas id="fireworks"></canvas>
+
+  <div class="container">
+    <!-- GIF -->
+    <div class="gif-container">
+      <img src="GIFCUMPLE.gif" alt="GIF de cumpleaños">
+    </div>
+
+    <!-- Texto -->
+    <div class="content">
+      <h1>🌸 Feliz Cumpleaños 🌸</h1>
+      <p>Hoy celebramos tu vida y la alegría que compartes con todos nosotros.</p>
+      <p>Que cada día esté lleno de amor, sonrisas y sueños cumplidos. 🎂🎉</p>
+      <p>Gracias por ser una persona tan especial. 🌷</p>
+
+      <!-- Botón -->
+      <a href="cuenta.html" class="btn">Ir a la siguiente página ➡️</a>
+    </div>
+  </div>
+
+  <!-- Script para los fuegos artificiales -->
+  <script>
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let fireworks = [];
+
+    class Firework {
+      constructor(x, y, colors) {
+        this.x = x;
+        this.y = y;
+        this.particles = [];
+        for (let i = 0; i < 100; i++) {
+          this.particles.push(new Particle(x, y, colors));
+        }
+      }
+      draw() {
+        this.particles.forEach((p) => p.update());
+      }
+    }
+
+    class Particle {
+      constructor(x, y, colors) {
+        this.x = x;
+        this.y = y;
+        this.radius = Math.random() * 2 + 1;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.angle = Math.random() * 2 * Math.PI;
+        this.speed = Math.random() * 5 + 2;
+        this.life = 100;
+        this.alpha = 1;
+      }
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed + 0.5; 
+        this.life--;
+        this.alpha -= 0.01;
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = this.color.replace("ALPHA", this.alpha);
+        ctx.fill();
+      }
+    }
+
+    function createFirework() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * (canvas.height / 2);
+      const colors = [
+        "rgba(255,0,0,ALPHA)",
+        "rgba(255,255,0,ALPHA)",
+        "rgba(0,255,255,ALPHA)",
+        "rgba(0,255,0,ALPHA)",
+        "rgba(255,0,255,ALPHA)"
+      ];
+      fireworks.push(new Firework(x, y, colors));
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fireworks.forEach((f, i) => {
+        f.draw();
+        if (f.particles.every(p => p.life <= 0)) {
+          fireworks.splice(i, 1);
+        }
+      });
+      requestAnimationFrame(animate);
+    }
+
+    setInterval(createFirework, 1200);
+    animate();
+  </script>
+</body>
+</html>
